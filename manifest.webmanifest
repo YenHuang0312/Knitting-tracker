@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "編織小日子｜Knitting Tracker",
+  "short_name": "編織小日子",
+  "description": "記錄編織作品、行數、時間與 Gauge",
+  "lang": "zh-Hant",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbf7f0",
+  "theme_color": "#f7efe3",
+  "icons": [
+    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"}
+  ]
+}
