@@ -1,160 +1,179 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#f7efe3">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="編織小日子">
-  <meta name="description" content="記錄編織作品、行數、時間與 Gauge 的個人編織工具">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="stylesheet" href="styles.css">
-  <title>編織小日子｜Knitting Tracker</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7efe3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="編織小日子">
+<meta name="description" content="棒針與鉤針織圖設計、編織計時及作品管理">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+<title>編織小日子｜Knitting & Crochet Studio</title>
 </head>
 <body>
-  <div class="app-shell">
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">MY KNITTING JOURNAL</p>
-        <h1>編織小日子 <span aria-hidden="true">🧶</span></h1>
-      </div>
-      <button class="icon-button" id="settingsBtn" aria-label="資料備份與設定">⚙️</button>
-    </header>
+<div class="app-shell">
+<header class="topbar">
+  <div><p class="eyebrow">KNITTING & CROCHET STUDIO</p><h1>編織小日子 <span>🧶</span></h1></div>
+  <button class="icon-button" id="settingsBtn" aria-label="資料備份">⚙️</button>
+</header>
+<nav class="tabs" aria-label="主要功能">
+  <button class="tab active" data-tab="home">總覽</button>
+  <button class="tab" data-tab="knitting">棒針織圖</button>
+  <button class="tab" data-tab="crochet">鉤針織圖</button>
+  <button class="tab" data-tab="projects">作品管理</button>
+  <button class="tab" data-tab="history">歷史紀錄</button>
+</nav>
 
-    <nav class="tabs" aria-label="主要頁面">
-      <button class="tab active" data-tab="workbench">編織中</button>
-      <button class="tab" data-tab="projects">我的作品</button>
-      <button class="tab" data-tab="history">歷史紀錄</button>
-    </nav>
-
-    <main>
-      <section id="workbench" class="page active">
-        <div class="card project-select-card">
-          <div class="section-heading">
-            <div><p class="eyebrow">CURRENT PROJECT</p><h2>目前作品</h2></div>
-            <button class="text-button" id="quickAddProject">＋ 新作品</button>
-          </div>
-          <select id="activeProjectSelect" aria-label="選擇目前作品"></select>
-          <div class="inline-meta">
-            <span id="activeProjectMeta">尚未建立作品</span>
-            <span id="activeProjectProgress">0% 完成</span>
-          </div>
-          <div class="progress-track"><div id="activeProgressBar" class="progress-fill"></div></div>
-        </div>
-
-        <div class="card timer-card">
-          <div class="section-heading">
-            <div><p class="eyebrow">FOCUS TIME</p><h2>編織計時</h2></div>
-            <span class="soft-pill" id="timerStatus">尚未開始</span>
-          </div>
-          <div class="timer-display" id="timerDisplay">00:00:00</div>
-          <div class="button-row">
-            <button class="button primary" id="startTimer">▶ 開始</button>
-            <button class="button secondary" id="pauseTimer" disabled>Ⅱ 暫停</button>
-            <button class="button ghost" id="resetTimer">重設</button>
-          </div>
-          <p class="helper">切換頁面或關閉 App 後，計時仍會依照實際經過時間累計。</p>
-        </div>
-
-        <div class="card counter-card">
-          <div class="section-heading">
-            <div><p class="eyebrow">ROW COUNTER</p><h2>行數計次</h2></div>
-            <span class="soft-pill" id="partPill">前片</span>
-          </div>
-          <label class="field-label" for="partSelect">目前編織部位</label>
-          <select id="partSelect">
-            <option>前片</option><option>後片</option><option>左袖</option><option>右袖</option>
-            <option>領口</option><option>門襟</option><option>下擺</option><option>帽子</option><option>其他</option>
-          </select>
-          <div class="counter">
-            <button class="counter-control" id="minusRow" aria-label="減少一行">−</button>
-            <div class="counter-value"><strong id="rowCount">0</strong><span>ROWS / 行</span></div>
-            <button class="counter-control plus" id="plusRow" aria-label="增加一行">＋</button>
-          </div>
-          <div class="button-row quick-counts">
-            <button class="button secondary" data-add="1">＋1 行</button>
-            <button class="button secondary" data-add="5">＋5 行</button>
-            <button class="button secondary" data-add="10">＋10 行</button>
-          </div>
-          <div class="save-row">
-            <label class="field-label" for="targetRows">此部位目標行數（選填）</label>
-            <input id="targetRows" type="number" min="0" inputmode="numeric" placeholder="例如 80">
-          </div>
-          <div class="progress-track"><div id="partProgressBar" class="progress-fill"></div></div>
-          <p class="helper" id="partProgressText">尚未設定目標行數</p>
-          <button class="button primary full" id="saveSession">儲存本次編織紀錄</button>
-        </div>
-
-        <div class="card stats-grid">
-          <div><p class="eyebrow">TOTAL TIME</p><strong id="totalTime">0 小時 0 分</strong><span>累積編織時間</span></div>
-          <div><p class="eyebrow">TOTAL ROWS</p><strong id="totalRows">0</strong><span>已記錄行數</span></div>
-        </div>
-      </section>
-
-      <section id="projects" class="page">
-        <div class="page-title-row"><div><p class="eyebrow">YOUR PROJECTS</p><h2>我的作品</h2></div><button class="button primary" id="addProjectBtn">＋ 新增作品</button></div>
-        <div id="projectList" class="stack"></div>
-      </section>
-
-      <section id="history" class="page">
-        <div class="page-title-row"><div><p class="eyebrow">KNITTING LOG</p><h2>歷史紀錄</h2></div><span class="soft-pill" id="historyCount">0 筆</span></div>
-        <div class="filter-row"><select id="historyProjectFilter"><option value="all">所有作品</option></select></div>
-        <div id="historyList" class="stack"></div>
-      </section>
-    </main>
-
-    <footer>一針一線，慢慢完成 ♡</footer>
+<main>
+<section id="home" class="page active">
+  <div class="hero card"><div><p class="eyebrow">YOUR CREATIVE WORKSPACE</p><h2>今天想編織什麼？</h2><p class="muted">從織圖設計到每一針的進度，都幫你收好。</p></div><div class="hero-yarn">🧶</div></div>
+  <div class="home-grid">
+    <button class="feature-card" data-goto="knitting"><span class="feature-icon">🧥</span><b>棒針織圖生成器</b><small>依 Gauge 與尺寸計算毛衣織圖</small></button>
+    <button class="feature-card" data-goto="crochet"><span class="feature-icon">🧸</span><b>鉤針織圖編輯器</b><small>玩偶部位、逐圈針法與針數</small></button>
   </div>
+  <div class="card">
+    <div class="section-heading"><div><p class="eyebrow">ACTIVE PROJECT</p><h2>目前編織作品</h2></div><button class="text-button" id="homeAddProject">＋ 新增</button></div>
+    <select id="activeProjectSelect" aria-label="選擇目前作品"></select>
+    <div class="inline-meta"><span id="activeProjectMeta">尚未建立作品</span><span id="activeProjectProgress">0 行</span></div>
+    <div class="progress-track"><div id="activeProgressBar" class="progress-fill"></div></div>
+  </div>
+  <div class="card timer-card">
+    <div class="section-heading"><div><p class="eyebrow">FOCUS TIME</p><h2>編織計時器</h2></div><span class="soft-pill" id="timerStatus">尚未開始</span></div>
+    <div class="timer-display" id="timerDisplay">00:00:00</div>
+    <div class="button-row"><button class="button primary" id="startTimer">▶ 開始</button><button class="button secondary" id="pauseTimer" disabled>Ⅱ 暫停</button><button class="button ghost" id="resetTimer">重設</button></div>
+    <p class="helper">切換頁面或鎖定手機後，再回到 App 時會依實際經過時間補算。</p>
+  </div>
+  <div class="card">
+    <div class="section-heading"><div><p class="eyebrow">ROW COUNTER</p><h2>快速計次</h2></div><span class="soft-pill" id="currentPartPill">前片</span></div>
+    <label class="field-label" for="homePart">目前部位</label><select id="homePart"><option>前片</option><option>後片</option><option>左袖</option><option>右袖</option><option>領口</option><option>門襟</option><option>下擺</option><option>頭部</option><option>身體</option><option>其他</option></select>
+    <div class="counter"><button class="counter-control" id="minusRow">−</button><div class="counter-value"><strong id="rowCount">0</strong><span>ROWS / 行・圈</span></div><button class="counter-control plus" id="plusRow">＋</button></div>
+    <div class="button-row"><button class="button secondary" data-add="5">＋5</button><button class="button secondary" data-add="10">＋10</button><button class="button primary" id="saveSession">儲存本次紀錄</button></div>
+  </div>
+  <div class="stats-grid"><div class="card"><p class="eyebrow">TOTAL TIME</p><strong id="totalTime">0 小時 0 分</strong><span>累積編織時間</span></div><div class="card"><p class="eyebrow">TOTAL ROWS</p><strong id="totalRows">0</strong><span>已記錄行數／圈數</span></div></div>
+</section>
 
-  <dialog id="projectDialog">
-    <form id="projectForm" method="dialog" class="dialog-content">
-      <div class="dialog-heading"><div><p class="eyebrow">NEW PROJECT</p><h2 id="projectDialogTitle">新增作品</h2></div><button type="button" class="close-button" data-close="projectDialog">✕</button></div>
-      <input type="hidden" id="projectId">
-      <label class="field-label" for="projectName">作品名稱 *</label><input id="projectName" required maxlength="80" placeholder="例如：煙綠色針織背心">
-      <label class="field-label" for="projectType">作品類型</label>
-      <select id="projectType"><option>毛衣</option><option>背心</option><option>外套</option><option>圍巾</option><option>帽子</option><option>襪子</option><option>其他</option></select>
-      <div class="two-columns">
-        <div><label class="field-label" for="projectNeedle">棒針尺寸（mm）</label><input id="projectNeedle" type="number" step="0.25" min="0" placeholder="例如 3.5"></div>
-        <div><label class="field-label" for="projectYarn">毛線名稱</label><input id="projectYarn" maxlength="80" placeholder="品牌／線材"></div>
-      </div>
-      <label class="field-label" for="projectColor">毛線顏色</label><input id="projectColor" maxlength="60" placeholder="例如：煙綠色">
-      <label class="field-label" for="projectNotes">作品備註</label><textarea id="projectNotes" rows="2" placeholder="版型、尺寸、特殊織法等"></textarea>
-      <div class="dialog-actions"><button type="button" class="button ghost" data-close="projectDialog">取消</button><button type="submit" class="button primary">儲存作品</button></div>
-    </form>
-  </dialog>
-
-  <dialog id="gaugeDialog">
-    <form id="gaugeForm" method="dialog" class="dialog-content">
-      <div class="dialog-heading"><div><p class="eyebrow">GAUGE NOTES</p><h2>Gauge 紀錄</h2></div><button type="button" class="close-button" data-close="gaugeDialog">✕</button></div>
-      <input type="hidden" id="gaugeProjectId">
-      <p class="helper">請填寫樣片量測結果，預設以 10 × 10 公分為基準。</p>
-      <div class="two-columns">
-        <div><label class="field-label" for="gaugeStitches">10 公分針數</label><input id="gaugeStitches" type="number" min="0" step="0.5" inputmode="decimal" placeholder="例如 24"></div>
-        <div><label class="field-label" for="gaugeRows">10 公分行數</label><input id="gaugeRows" type="number" min="0" step="0.5" inputmode="decimal" placeholder="例如 32"></div>
-      </div>
-      <label class="field-label" for="gaugeNeedle">測試棒針尺寸（mm）</label><input id="gaugeNeedle" type="number" min="0" step="0.25" placeholder="例如 3.5">
-      <label class="field-label" for="gaugePattern">織法／洗滌狀態</label><input id="gaugePattern" placeholder="例如：平針，洗後平放晾乾">
-      <div class="dialog-actions"><button type="button" class="button ghost" data-close="gaugeDialog">取消</button><button type="submit" class="button primary">儲存 Gauge</button></div>
-    </form>
-  </dialog>
-
-  <dialog id="settingsDialog">
-    <div class="dialog-content">
-      <div class="dialog-heading"><div><p class="eyebrow">DATA & BACKUP</p><h2>資料管理</h2></div><button class="close-button" data-close="settingsDialog">✕</button></div>
-      <p class="helper">資料只保存在這台裝置的瀏覽器中。建議定期匯出備份，避免清除網站資料或更換手機時遺失。</p>
-      <button class="button primary full" id="exportBackup">下載完整備份（JSON）</button>
-      <label class="button secondary full file-label">匯入備份（JSON）<input id="importBackup" type="file" accept="application/json,.json" hidden></label>
-      <button class="button secondary full" id="exportCsv">匯出歷史紀錄（CSV）</button>
-      <div class="divider"></div>
-      <p class="helper">匯入備份會以備份檔內容取代目前 App 資料，請先確認已匯出現有資料。</p>
-      <button class="button danger full" id="deleteAllData">清除所有資料</button>
-      <p class="version-note">Knitting Tracker · Local edition</p>
+<section id="knitting" class="page">
+  <div class="page-heading"><p class="eyebrow">KNITTING PATTERN GENERATOR</p><h2>棒針毛衣織圖生成器</h2><p class="muted">依 Gauge、身體尺寸與毛衣結構，產生可編輯的計算草稿。</p></div>
+  <form id="knitForm" class="card form-card">
+    <h3>01 · Gauge 與工具</h3>
+    <div class="two-columns">
+      <div><label class="field-label" for="kGaugeSt">10 cm 針數</label><input id="kGaugeSt" type="number" min="1" step="0.5" value="24" required></div>
+      <div><label class="field-label" for="kGaugeRow">10 cm 行數</label><input id="kGaugeRow" type="number" min="1" step="0.5" value="32" required></div>
+      <div><label class="field-label" for="kNeedle">棒針尺寸 mm</label><input id="kNeedle" type="number" min="0" step="0.25" value="3.5"></div>
+      <div><label class="field-label" for="kSwatch">10×10 cm 樣片重量 g（選填）</label><input id="kSwatch" type="number" min="0" step="0.1" placeholder="例如 12"></div>
     </div>
-  </dialog>
+    <h3>02 · 身體尺寸</h3>
+    <div class="two-columns">
+      <div><label class="field-label" for="kHeight">身高 cm</label><input id="kHeight" type="number" min="1" value="158"></div>
+      <div><label class="field-label" for="kWeight">體重 kg</label><input id="kWeight" type="number" min="1" value="52"></div>
+      <div><label class="field-label" for="kChest">實際胸圍 cm *</label><input id="kChest" type="number" min="1" value="84" required></div>
+      <div><label class="field-label" for="kWaist">腰圍 cm</label><input id="kWaist" type="number" min="1" placeholder="選填"></div>
+      <div><label class="field-label" for="kHip">臀圍 cm</label><input id="kHip" type="number" min="1" placeholder="選填"></div>
+      <div><label class="field-label" for="kUpperArm">上臂圍 cm</label><input id="kUpperArm" type="number" min="1" value="28"></div>
+      <div><label class="field-label" for="kWrist">手腕圍 cm</label><input id="kWrist" type="number" min="1" value="16"></div>
+      <div><label class="field-label" for="kShoulder">肩寬 cm</label><input id="kShoulder" type="number" min="1" placeholder="選填"></div>
+    </div>
+    <h3>03 · 毛衣設計</h3>
+    <div class="two-columns">
+      <div><label class="field-label" for="kGarment">衣服類型</label><select id="kGarment"><option>套頭毛衣</option><option>開襟外套</option><option>背心</option></select></div>
+      <div><label class="field-label" for="kShoulderType">肩型／結構</label><select id="kShoulderType"><option value="raglan">插肩 Raglan</option><option value="drop">落肩 Drop Shoulder</option><option value="setin">正肩 Set-in</option></select></div>
+      <div><label class="field-label" for="kNeck">領型</label><select id="kNeck"><option value="crew">圓領 Crew Neck</option><option value="v">V 領</option><option value="high">高領</option><option value="boat">船型領</option></select></div>
+      <div><label class="field-label" for="kDirection">織作方向</label><select id="kDirection"><option value="bottom">由下往上 Bottom Up</option><option value="top">由上往下 Top Down</option></select></div>
+      <div><label class="field-label" for="kFit">版型</label><select id="kFit"><option value="fit">Fit</option><option value="regular" selected>Regular</option><option value="loose">Loose</option><option value="oversized">Oversized</option><option value="custom">自訂 Ease</option></select></div>
+      <div><label class="field-label" for="kEase">胸圍寬鬆量 Ease cm</label><input id="kEase" type="number" step="0.5" value="6"></div>
+      <div><label class="field-label" for="kBodyLength">衣長（肩點至下擺）cm</label><input id="kBodyLength" type="number" min="1" value="58"></div>
+      <div><label class="field-label" for="kSleeveLength">袖長 cm</label><input id="kSleeveLength" type="number" min="1" value="55"></div>
+      <div><label class="field-label" for="kArmhole">袖窿深度 cm</label><input id="kArmhole" type="number" min="1" value="21"></div>
+      <div><label class="field-label" for="kRib">下擺／袖口羅紋 cm</label><input id="kRib" type="number" min="0" value="5"></div>
+      <div><label class="field-label" for="kSleeve">袖型</label><select id="kSleeve"><option value="straight">直筒袖</option><option value="taper">逐段縮袖</option><option value="puff">泡泡袖（需自行修正）</option></select></div>
+      <div><label class="field-label" for="kButton">門襟寬度 cm（開襟用）</label><input id="kButton" type="number" min="0" value="3"></div>
+    </div>
+    <p class="helper">身高與體重只作為尺寸參考；胸圍及其他實際量測尺寸優先。請使用洗滌、晾乾後的樣片 Gauge。</p>
+    <button class="button primary full" type="submit">產生毛衣織圖計算草稿</button>
+  </form>
+  <div id="knitOutput" class="card output-card hidden">
+    <div class="section-heading"><div><p class="eyebrow">GENERATED DRAFT</p><h3>計算結果與織圖</h3></div><span class="soft-pill">可編輯</span></div>
+    <div id="knitSummary"></div>
+    <label class="field-label" for="knitPatternText">完整文字織圖（可自行修改）</label>
+    <textarea id="knitPatternText" rows="22" spellcheck="false"></textarea>
+    <div class="button-row"><button class="button secondary" id="copyKnit">複製織圖</button><button class="button primary" id="saveKnitProject">儲存為作品</button></div>
+    <p class="helper">本工具產生的是工程計算草稿。正肩袖山、領口曲線、肩斜、花樣密度及實際版型仍需試織與人工核對；不要將未試織的計算稿視為已驗證成衣版型。</p>
+  </div>
+</section>
 
-  <div id="toast" role="status" aria-live="polite"></div>
-  <script src="app.js"></script>
-</body>
-</html>
+<section id="crochet" class="page">
+  <div class="page-heading"><p class="eyebrow">CROCHET PATTERN STUDIO</p><h2>鉤針織圖編輯器</h2><p class="muted">建立玩偶各部位，逐圈記錄針法，並計算每圈完成針數。</p></div>
+  <div class="card form-card">
+    <h3>01 · 鉤針作品</h3>
+    <label class="field-label" for="cProjectName">作品名稱</label><input id="cProjectName" placeholder="例如：奶油色小熊">
+    <div class="two-columns">
+      <div><label class="field-label" for="cHook">鉤針尺寸 mm</label><input id="cHook" type="number" min="0" step="0.25" placeholder="例如 3.0"></div>
+      <div><label class="field-label" for="cYarn">毛線名稱／顏色</label><input id="cYarn" placeholder="例如：棉線／奶茶色"></div>
+    </div>
+    <h3>02 · 部位管理</h3>
+    <div class="two-columns">
+      <div><label class="field-label" for="cPartName">部位名稱</label><input id="cPartName" placeholder="例如：頭部 Head"></div>
+      <div><label class="field-label" for="cMethod">織作方式</label><select id="cMethod"><option value="round">圈織 Round</option><option value="flat">來回織片 Row</option></select></div>
+    </div>
+    <button class="button secondary full" id="addCrochetPart">＋ 新增部位</button>
+    <div id="crochetParts" class="stack compact-stack"></div>
+  </div>
+  <div class="card form-card">
+    <h3>03 · 新增一圈／行織圖</h3>
+    <div class="two-columns">
+      <div><label class="field-label" for="cRoundNo">圈／行數</label><input id="cRoundNo" type="number" min="1" value="1"></div>
+      <div><label class="field-label" for="cExpected">預期完成針數（選填）</label><input id="cExpected" type="number" min="0" placeholder="例如 30"></div>
+    </div>
+    <label class="field-label" for="cInstruction">針法指示</label>
+    <textarea id="cInstruction" rows="3" placeholder="例如：(sc*3, inc*1)*6"></textarea>
+    <div class="helper">支援基本格式：sc*3、inc*1、dec*1、括號群組與重複次數，例如 (sc*3, inc*1)*6。特殊針法可直接以文字備註。</div>
+    <div class="button-row"><button class="button secondary" id="calculateCrochet">計算針數</button><button class="button primary" id="saveCrochetRound">儲存本圈／行</button></div>
+    <div id="crochetCalc" class="calc-result hidden"></div>
+  </div>
+  <div class="card">
+    <div class="section-heading"><h3>目前部位織圖</h3><span class="soft-pill" id="crochetActivePart">尚未選擇</span></div>
+    <div id="crochetPatternRows" class="stack compact-stack"><div class="empty-state">先新增部位，再加入每圈／行針法。</div></div>
+    <button class="button secondary full" id="exportCrochetText">匯出鉤針織圖文字</button>
+  </div>
+</section>
+
+<section id="projects" class="page">
+  <div class="page-heading"><p class="eyebrow">PROJECT LIBRARY</p><h2>作品管理</h2><p class="muted">棒針、鉤針作品與 Gauge 資料集中管理。</p></div>
+  <div class="card"><button class="button primary full" id="addProjectBtn">＋ 新增一般作品</button></div>
+  <div id="projectList" class="stack"></div>
+</section>
+
+<section id="history" class="page">
+  <div class="page-heading"><p class="eyebrow">KNITTING LOG</p><h2>歷史紀錄</h2></div>
+  <div class="card"><select id="historyFilter"><option value="all">所有作品</option></select></div>
+  <div id="historyList" class="stack"></div>
+</section>
+</main>
+<footer>一針一線，慢慢完成 ♡</footer>
+</div>
+
+<dialog id="projectDialog"><form id="projectForm" method="dialog" class="dialog-content">
+  <div class="dialog-heading"><div><p class="eyebrow">PROJECT</p><h2 id="projectDialogTitle">新增作品</h2></div><button type="button" class="close-button" data-close="projectDialog">✕</button></div>
+  <input type="hidden" id="projectId">
+  <label class="field-label" for="projectName">作品名稱 *</label><input id="projectName" required maxlength="80">
+  <div class="two-columns"><div><label class="field-label" for="projectMode">編織類型</label><select id="projectMode"><option>棒針</option><option>鉤針</option><option>其他</option></select></div><div><label class="field-label" for="projectType">作品種類</label><input id="projectType" placeholder="毛衣／玩偶／包包"></div></div>
+  <div class="two-columns"><div><label class="field-label" for="projectNeedle">針具尺寸 mm</label><input id="projectNeedle" type="number" step="0.25"></div><div><label class="field-label" for="projectYarn">毛線名稱</label><input id="projectYarn"></div></div>
+  <label class="field-label" for="projectNotes">備註</label><textarea id="projectNotes" rows="2"></textarea>
+  <div class="dialog-actions"><button type="button" class="button ghost" data-close="projectDialog">取消</button><button type="submit" class="button primary">儲存作品</button></div>
+</form></dialog>
+
+<dialog id="settingsDialog"><div class="dialog-content">
+  <div class="dialog-heading"><div><p class="eyebrow">DATA & BACKUP</p><h2>資料管理</h2></div><button class="close-button" data-close="settingsDialog">✕</button></div>
+  <p class="helper">資料保存在目前裝置的瀏覽器中，不會自動同步。升級後會嘗試讀取第一版資料。請定期下載 JSON 備份。</p>
+  <button class="button primary full" id="exportBackup">下載完整備份 JSON</button>
+  <label class="button secondary full file-label">匯入備份 JSON<input id="importBackup" type="file" accept="application/json,.json" hidden></label>
+  <button class="button secondary full" id="exportHistoryCsv">匯出歷史 CSV</button>
+  <div class="divider"></div><button class="button danger full" id="clearData">清除所有資料</button>
+  <p class="version-note">Knitting & Crochet Studio · Version 2.0</p>
+</div></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="app.js"></script>
+</body></html>
