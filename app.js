@@ -12,7 +12,8 @@ function toast(s){$("toast").textContent=s;$("toast").classList.add("show");clea
 function fmt(sec){sec=Math.max(0,Math.floor(sec||0));return [Math.floor(sec/3600),Math.floor(sec%3600/60),sec%60].map(x=>String(x).padStart(2,"0")).join(":");}
 function duration(sec){return `${Math.floor(sec/3600)} 小時 ${Math.floor(sec%3600/60)} 分`;}
 function active(){return db.projects.find(p=>p.id===db.activeProjectId)||null;}
-function totals(){return {seconds:db.sessions.reduce((n,s)=>n+(+s.seconds||0),0),rows:db.sessions.reduce((n,s)=>n+(+s.rows||0),0)};}
+function totals(){return {seconds:db.sessions.reduce((n,s)=>n+(+s.seconds||0),0)};}
+function projectRows(p){return db.sessions.filter(s=>s.projectId===p.id).reduce((n,s)=>n+(+s.rows||0),0)+(+p.currentRows||0);}
 function render(){if(!active()&&db.projects.length)db.activeProjectId=db.projects[0].id;renderActive();renderProjects();renderHistory();renderCrochet();}
 function renderActive(){
  const p=active();$("activeProjectSelect").innerHTML=db.projects.length?db.projects.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join(""):'<option value="">請先新增作品</option>';
@@ -21,17 +22,23 @@ function renderActive(){
  $("activeProjectMeta").textContent=p?`${p.mode||"棒針"} · ${p.type||""} · ${p.yarn||"未填毛線"}`:"尚未建立作品";
  $("activeProjectProgress").textContent=p?`${p.currentRows||0} 行／圈`:"0 行";
  $("activeProgressBar").style.width=p&&p.targetRows?Math.min(100,(p.currentRows||0)/p.targetRows*100)+"%":"0%";
- $("homePart").value=p?.currentPart||"前片";$("currentPartPill").textContent=p?.currentPart||"前片";$("rowCount").textContent=p?.currentRows||0;
+ const partName=p?.currentPart||"前片";
+ const presetParts=["前片","後片","左袖","右袖","領口","門襟","下擺","頭部","身體","其他"];
+ $("homePart").value=presetParts.includes(partName)?partName:"其他";
+ $("homePartCustom").value=presetParts.includes(partName)?"":partName;
+ $("currentPartPill").textContent=partName;$("rowCount").textContent=p?.currentRows||0;
  $("startTimer").disabled=!p||!!p.timer?.running;$("pauseTimer").disabled=!p||!p.timer?.running;
  $("timerStatus").textContent=p?.timer?.running?"正在計時":"尚未開始";
  $("timerDisplay").textContent=fmt(p?.timer?.running?(p.timer.elapsed||0)+(now()-p.timer.startedAt)/1000:p?.timer?.elapsed||0);
  const t=totals();const running=p?.timer?.running?(now()-p.timer.startedAt)/1000:0;
- $("totalTime").textContent=duration(t.seconds+running+(p?.timer?.elapsed||0));$("totalRows").textContent=t.rows+db.projects.reduce((n,x)=>n+(+x.currentRows||0),0);
+ $("totalTime").textContent=duration(t.seconds+running+(p?.timer?.elapsed||0));
+ $("totalRows").innerHTML=db.projects.length?db.projects.map(x=>`<span class="total-row-item"><span>${esc(x.name)}</span><b>${projectRows(x)} 行／圈</b></span>`).join(""):"尚無作品紀錄";
+ $("timerStartHours").disabled=!!p?.timer?.running;$("timerStartMinutes").disabled=!!p?.timer?.running;$("setTimerStart").disabled=!p||!!p.timer?.running;
  $("saveSession").disabled=!p;
 }
 function renderProjects(){
  const el=$("projectList");if(!db.projects.length){el.innerHTML='<div class="empty-state">尚無作品，先建立一件作品吧。</div>';return;}
- el.innerHTML=db.projects.map(p=>`<article class="project-card"><div class="section-heading"><h3>${esc(p.name)}</h3>${p.id===db.activeProjectId?'<span class="soft-pill">目前作品</span>':""}</div><p>${esc(p.mode||"棒針")} · ${esc(p.type||"")} · ${esc(p.yarn||"未填毛線")}</p><p>目前累積 ${p.currentRows||0} 行／圈 · ${p.needle?esc(p.needle)+" mm":""}</p><div class="project-actions"><button class="small-button" data-project-action="activate" data-id="${p.id}">設為目前</button><button class="small-button" data-project-action="edit" data-id="${p.id}">編輯</button><button class="small-button danger-text" data-project-action="delete" data-id="${p.id}">刪除</button></div></article>`).join("");
+ el.innerHTML=db.projects.map(p=>`<article class="project-card"><div class="section-heading"><h3>${esc(p.name)}</h3>${p.id===db.activeProjectId?'<span class="soft-pill">目前作品</span>':""}</div><p>${esc(p.mode||"棒針")} · ${esc(p.type||"")} · ${esc(p.yarn||"未填毛線")}</p><p>累積 ${projectRows(p)} 行／圈（尚未儲存 ${p.currentRows||0}） · ${p.needle?esc(p.needle)+" mm":""}</p><div class="project-actions"><button class="small-button" data-project-action="activate" data-id="${p.id}">設為目前</button><button class="small-button" data-project-action="edit" data-id="${p.id}">編輯</button><button class="small-button danger-text" data-project-action="delete" data-id="${p.id}">刪除</button></div></article>`).join("");
 }
 function renderHistory(){
  const filter=$("historyFilter").value||"all";const list=[...db.sessions].filter(s=>filter==="all"||s.projectId===filter).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
@@ -48,11 +55,13 @@ $("addProjectBtn").onclick=$("homeAddProject").onclick=()=>openProject();
 $("projectForm").onsubmit=e=>{e.preventDefault();let id=$("projectId").value,old=db.projects.find(p=>p.id===id);let p={...(old||{id:uid(),currentRows:0,currentPart:"前片",timer:{elapsed:0,running:false}}),name:$("projectName").value.trim(),mode:$("projectMode").value,type:$("projectType").value.trim(),needle:$("projectNeedle").value,yarn:$("projectYarn").value.trim(),notes:$("projectNotes").value.trim()};if(old)db.projects=db.projects.map(x=>x.id===id?p:x);else{db.projects.push(p);db.activeProjectId=p.id;}save();$("projectDialog").close();render();toast("作品已儲存");};
 $("projectList").onclick=e=>{let b=e.target.closest("[data-project-action]");if(!b)return;let p=db.projects.find(x=>x.id===b.dataset.id);if(!p)return;if(b.dataset.projectAction==="activate"){db.activeProjectId=p.id;save();render();tab("home");}if(b.dataset.projectAction==="edit")openProject(p);if(b.dataset.projectAction==="delete"&&confirm(`刪除「${p.name}」及其歷史紀錄？`)){db.projects=db.projects.filter(x=>x.id!==p.id);db.sessions=db.sessions.filter(x=>x.projectId!==p.id);if(db.activeProjectId===p.id)db.activeProjectId=db.projects[0]?.id||null;save();render();}};
 $("activeProjectSelect").onchange=e=>{db.activeProjectId=e.target.value;save();renderActive();};
-$("homePart").onchange=e=>{let p=active();if(p){p.currentPart=e.target.value;save();$("currentPartPill").textContent=p.currentPart;}};
+$("homePart").onchange=e=>{let p=active();if(p){$("homePartCustom").value="";p.currentPart=e.target.value;save();$("currentPartPill").textContent=p.currentPart;}};
+$("homePartCustom").oninput=e=>{let p=active();if(!p)return;const custom=e.target.value.trim();if(custom){p.currentPart=custom;$("currentPartPill").textContent=custom;}else{p.currentPart=$("homePart").value;$("currentPartPill").textContent=p.currentPart;}save();};
+$("setTimerStart").onclick=()=>{let p=active();if(!p)return toast("請先新增作品");if(p.timer?.running)return toast("請先暫停計時再調整起始時間");let h=Math.max(0,Math.min(999,Math.floor(Number($("timerStartHours").value)||0))),m=Math.max(0,Math.min(59,Math.floor(Number($("timerStartMinutes").value)||0)));p.timer={elapsed:h*3600+m*60,running:false};save();renderActive();toast(`起始時間已設定為 ${fmt(p.timer.elapsed)}`);};
 $("startTimer").onclick=()=>{let p=active();if(!p)return toast("請先新增作品");p.timer=p.timer||{elapsed:0,running:false};if(!p.timer.running){p.timer.running=true;p.timer.startedAt=now();save();renderActive();}};
 $("pauseTimer").onclick=()=>{let p=active();if(!p?.timer?.running)return;p.timer.elapsed=(p.timer.elapsed||0)+(now()-p.timer.startedAt)/1000;p.timer.running=false;delete p.timer.startedAt;save();renderActive();};
 $("resetTimer").onclick=()=>{let p=active();if(!p)return;if(confirm("確定將尚未儲存的計時歸零？")){p.timer={elapsed:0,running:false};save();renderActive();}};
-function addRows(n){let p=active();if(!p)return toast("請先新增作品");p.currentRows=Math.max(0,(p.currentRows||0)+n);save();renderActive();}
+function addRows(n){let p=active();if(!p)return toast("請先新增作品");p.currentRows=Math.max(0,(p.currentRows||0)+n);save();renderActive();renderProjects();}
 $("plusRow").onclick=()=>addRows(1);$("minusRow").onclick=()=>addRows(-1);document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>addRows(+b.dataset.add));
 $("saveSession").onclick=()=>{let p=active();if(!p)return;let sec=p.timer?.running?(p.timer.elapsed||0)+(now()-p.timer.startedAt)/1000:p.timer?.elapsed||0,rows=p.currentRows||0;if(!sec&&!rows)return toast("目前沒有行數或時間");db.sessions.push({id:uid(),projectId:p.id,projectName:p.name,part:p.currentPart||"未指定",rows,seconds:Math.round(sec),createdAt:now()});p.currentRows=0;p.timer={elapsed:0,running:false};save();render();toast("本次紀錄已儲存");};
 $("historyFilter").onchange=renderHistory;

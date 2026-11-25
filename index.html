@@ -43,16 +43,24 @@
   <div class="card timer-card">
     <div class="section-heading"><div><p class="eyebrow">FOCUS TIME</p><h2>編織計時器</h2></div><span class="soft-pill" id="timerStatus">尚未開始</span></div>
     <div class="timer-display" id="timerDisplay">00:00:00</div>
+    <div class="timer-adjust">
+      <div><label class="field-label" for="timerStartHours">起始時間（時）</label><input id="timerStartHours" type="number" min="0" max="999" step="1" value="0" inputmode="numeric"></div>
+      <div><label class="field-label" for="timerStartMinutes">分</label><input id="timerStartMinutes" type="number" min="0" max="59" step="1" value="0" inputmode="numeric"></div>
+      <button class="button secondary" id="setTimerStart">設定起始時間</button>
+    </div>
     <div class="button-row"><button class="button primary" id="startTimer">▶ 開始</button><button class="button secondary" id="pauseTimer" disabled>Ⅱ 暫停</button><button class="button ghost" id="resetTimer">重設</button></div>
     <p class="helper">切換頁面或鎖定手機後，再回到 App 時會依實際經過時間補算。</p>
   </div>
   <div class="card">
     <div class="section-heading"><div><p class="eyebrow">ROW COUNTER</p><h2>快速計次</h2></div><span class="soft-pill" id="currentPartPill">前片</span></div>
-    <label class="field-label" for="homePart">目前部位</label><select id="homePart"><option>前片</option><option>後片</option><option>左袖</option><option>右袖</option><option>領口</option><option>門襟</option><option>下擺</option><option>頭部</option><option>身體</option><option>其他</option></select>
+    <label class="field-label" for="homePart">目前部位（可選擇常用部位）</label>
+    <select id="homePart"><option>前片</option><option>後片</option><option>左袖</option><option>右袖</option><option>領口</option><option>門襟</option><option>下擺</option><option>頭部</option><option>身體</option><option>其他</option></select>
+    <label class="field-label" for="homePartCustom">或自行輸入部位名稱</label>
+    <input id="homePartCustom" type="text" maxlength="40" placeholder="例如：左前袖、口袋、帽沿">
     <div class="counter"><button class="counter-control" id="minusRow">−</button><div class="counter-value"><strong id="rowCount">0</strong><span>ROWS / 行・圈</span></div><button class="counter-control plus" id="plusRow">＋</button></div>
     <div class="button-row"><button class="button secondary" data-add="5">＋5</button><button class="button secondary" data-add="10">＋10</button><button class="button primary" id="saveSession">儲存本次紀錄</button></div>
   </div>
-  <div class="stats-grid"><div class="card"><p class="eyebrow">TOTAL TIME</p><strong id="totalTime">0 小時 0 分</strong><span>累積編織時間</span></div><div class="card"><p class="eyebrow">TOTAL ROWS</p><strong id="totalRows">0</strong><span>已記錄行數／圈數</span></div></div>
+  <div class="stats-grid"><div class="card"><p class="eyebrow">TOTAL TIME</p><strong id="totalTime">0 小時 0 分</strong><span>累積編織時間</span></div><div class="card"><p class="eyebrow">ROWS BY PROJECT</p><strong id="totalRows" class="total-row-breakdown">尚無作品紀錄</strong><span>各作品累積行數／圈數</span></div></div>
 </section>
 
 <section id="knitting" class="page">
